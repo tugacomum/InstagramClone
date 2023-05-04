@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "blank",
+    "slug": "blank",
+    "version": "1.0.0",
+    "icon": "./assets/insta.png",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    }
+  }
+}
