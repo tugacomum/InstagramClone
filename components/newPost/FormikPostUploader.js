@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { Formik } from "formik";
 import { useState } from "react";
 import { Divider } from "react-native-elements";
+import validUrl from 'valid-url'
 
 const PLACEHOLDER_IMAGE =
   "https://mtek3d.com/wp-content/uploads/2018/01/image-placeholder-500x500.jpg";
@@ -13,12 +14,16 @@ const uploadPostSchema = Yup.object().shape({
   caption: Yup.string().max(2200, "Caption has reached the character limit."),
 });
 
-const FormikPostUploader = () => {
+const FormikPostUploader = ({ navigation }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState(PLACEHOLDER_IMAGE);
   return (
     <Formik
       initialValues={{ caption: "", imageUrl: "" }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={(values) => {
+        console.log(values);
+        console.log("sucess post")
+        navigation.goBack();
+      }}
       validationSchema={uploadPostSchema}
       validateOnMount={true}
     >
@@ -39,7 +44,7 @@ const FormikPostUploader = () => {
             }}
           >
             <Image
-              source={{ uri: thumbnailUrl ? thumbnailUrl : PLACEHOLDER_IMAGE }}
+              source={{ uri: validUrl.isUri(thumbnailUrl) ? thumbnailUrl : PLACEHOLDER_IMAGE }}
               style={{ width: 100, height: 100 }}
             />
             <View style={{ flex: 1, marginLeft: 12 }}>
@@ -69,9 +74,11 @@ const FormikPostUploader = () => {
               {errors.imageUrl}
             </Text>
           )}
-          <Button onPress={handleSubmit} title="Share" disabled={!isValid}> 
-            
-          </Button>
+          <Button
+            onPress={handleSubmit}
+            title="Share"
+            disabled={!isValid}
+          ></Button>
         </>
       )}
     </Formik>
