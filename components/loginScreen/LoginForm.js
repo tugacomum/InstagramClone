@@ -8,9 +8,12 @@ import { Alert } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import * as Validator from "email-validator";
-import firebase from '../../firebase'
+import { app } from "../../firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginForm = ({ navigation }) => {
+  const auth = getAuth(app);
+
   const LoginFormSchema = Yup.object().shape({
     email: Yup.string().email().required("An email is required"),
     password: Yup.string()
@@ -18,11 +21,25 @@ const LoginForm = ({ navigation }) => {
       .min(6, "Your password has to have at least 6 characters"),
   });
 
-  const onLogin = async (email, password) => { 
+  const onLogin = async (email, password) => {
     try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      Alert.alert(error.message);
+      Alert.alert(
+        "My Lord...",
+        "something went wrong" + "\n\n... What would you like to do next!?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancelled"),
+            style: "cancel",
+          },
+          {
+            text: "Sign Up",
+            onPress: () => navigation.push("SignupScreen"),
+          },
+        ]
+      );
     }
   };
 
@@ -61,9 +78,17 @@ const LoginForm = ({ navigation }) => {
                 value={values.email}
               />
             </View>
-            <View style={[styles.inputField, {
-              borderColor: 1 > values.password.length || values.password.length >= 6 ? "#ccc" : "red"
-            }]} >
+            <View
+              style={[
+                styles.inputField,
+                {
+                  borderColor:
+                    1 > values.password.length || values.password.length >= 6
+                      ? "#ccc"
+                      : "red",
+                },
+              ]}
+            >
               <TextInput
                 placeholderTextColor="#444"
                 placeholder="Password"
@@ -80,7 +105,6 @@ const LoginForm = ({ navigation }) => {
               <Text style={{ color: "#6BB0F5" }}>Forgot password?</Text>
             </View>
             <Pressable
-              
               onPress={handleSubmit}
               titleSize={20}
               style={styles.button(isValid)}
@@ -90,7 +114,7 @@ const LoginForm = ({ navigation }) => {
             </Pressable>
             <View style={styles.signupContainer}>
               <Text>Don't have an account?</Text>
-              <TouchableOpacity onPress={() => navigation.push('SignupScreen')}>
+              <TouchableOpacity onPress={() => navigation.push("SignupScreen")}>
                 <Text style={{ color: "#6BB0F5" }}> Sign Up</Text>
               </TouchableOpacity>
             </View>

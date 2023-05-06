@@ -4,12 +4,17 @@ import { TextInput } from "react-native";
 import { StyleSheet } from "react-native";
 import { Pressable } from "react-native";
 import { TouchableOpacity } from "react-native";
-
+import { Alert } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import * as Validator from "email-validator";
+import { app } from "../../firebase";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
 
 const SignupForm = ({ navigation }) => {
+  const db = getFirestore(app);
+  const auth = getAuth(app);
   const SignupFormSchema = Yup.object().shape({
     email: Yup.string().email().required("An email is required"),
     username: Yup.string().required().min(2, "A username is required"),
@@ -17,12 +22,38 @@ const SignupForm = ({ navigation }) => {
       .required()
       .min(6, "Your password has to have at least 6 characters"),
   });
+
+  const getRandomProfilePicture = async () => {
+    const response = await fetch("https://randomuser.me/api/");
+    const data = await response.json();
+    return data.results[0].picture.large;
+  };
+
+  const onSignup = async (email, password, username) => {
+    try {
+      const authUser = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const test = await addDoc(collection(db, "users"), {
+        owner_uid: authUser.user.uid,
+        username: username,
+        email: authUser.user.email,
+        profile_picture: await getRandomProfilePicture(),
+      });
+      console.log("Document written with ID: ", test.id);
+    } catch (error) {
+      Alert.alert("My Lord...", error.message);
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       <Formik
         initialValues={{ email: "", username: "", password: "" }}
         onSubmit={(values) => {
-          console.log(values);
+          onSignup(values.email, values.password, values.username);
         }}
         validationSchema={SignupFormSchema}
         validateOnMount={true}
@@ -52,13 +83,13 @@ const SignupForm = ({ navigation }) => {
                 value={values.email}
               />
             </View>
-            
+
             <View
               style={[
                 styles.inputField,
                 {
                   borderColor:
-                  1 > values.username.length || values.username.length >= 2
+                    1 > values.username.length || values.username.length >= 2
                       ? "#ccc"
                       : "red",
                 },
@@ -73,8 +104,6 @@ const SignupForm = ({ navigation }) => {
                 onBlur={handleBlur("username")}
                 value={values.username}
               />
-
-
             </View>
 
             <View
