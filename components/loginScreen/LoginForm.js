@@ -8,12 +8,10 @@ import { Alert } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import * as Validator from "email-validator";
-import { app } from "../../firebase";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 
 const LoginForm = ({ navigation }) => {
-  const auth = getAuth(app);
-
   const LoginFormSchema = Yup.object().shape({
     email: Yup.string().email().required("An email is required"),
     password: Yup.string()

@@ -1,14 +1,28 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
+import { auth } from "../../firebase";
+import { signOut } from "firebase/auth";
 
 const Header = ({ navigation }) => {
+  const handleSignOut = async () => {
+    try {
+     await signOut(auth);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <View style={styles.container}>
-      <TouchableOpacity>
-        <Image style={styles.logo} source={{uri: 'https://static.wixstatic.com/media/c1f75a_58cf34e5174544e5ad5a633654860c03~mv2.png/v1/fill/w_766,h_300,al_c,lg_1,q_85,enc_auto/c1f75a_58cf34e5174544e5ad5a633654860c03~mv2.png'}} />
+      <TouchableOpacity onPress={handleSignOut} >
+        <Image
+          style={styles.logo}
+          source={{
+            uri: "https://static.wixstatic.com/media/c1f75a_58cf34e5174544e5ad5a633654860c03~mv2.png/v1/fill/w_766,h_300,al_c,lg_1,q_85,enc_auto/c1f75a_58cf34e5174544e5ad5a633654860c03~mv2.png",
+          }}
+        />
       </TouchableOpacity>
       <View style={styles.iconsContainer}>
-        <TouchableOpacity onPress={() => navigation.push('NewPostScreen')}>
+        <TouchableOpacity onPress={() => navigation.push("NewPostScreen")}>
           <Image
             style={styles.icon}
             source={{
@@ -70,8 +84,8 @@ const styles = StyleSheet.create({
     left: 20,
     width: 20,
     height: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 100,
   },
   unreadBadgeText: {

@@ -9,12 +9,12 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import * as Validator from "email-validator";
 import { app } from "../../firebase";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
+import { auth } from "../../firebase";
 
 const SignupForm = ({ navigation }) => {
   const db = getFirestore(app);
-  const auth = getAuth(app);
   const SignupFormSchema = Yup.object().shape({
     email: Yup.string().email().required("An email is required"),
     username: Yup.string().required().min(2, "A username is required"),
